@@ -1,6 +1,7 @@
 package org.hestia.system.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MenuNode {
@@ -13,6 +14,14 @@ public class MenuNode {
 	private Boolean hidden;
 	private String parents_id;
 	private List<MenuNode> children;
+	private HashMap<String, Object> meta;
+	
+	public HashMap<String, Object> getMeta() {
+		return meta;
+	}
+	public void setMeta(HashMap<String, Object> meta) {
+		this.meta = meta;
+	}
 	public String getMenu_id() {
 		return menu_id;
 	}

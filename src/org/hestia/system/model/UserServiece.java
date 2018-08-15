@@ -1,5 +1,7 @@
 package org.hestia.system.model;
 
+import java.util.List;
+
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -14,7 +16,8 @@ public class UserServiece {
 	 * @return
 	 */
 	public Record getUserByName(String userName) {
-		String sql = "select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time from system_users where user_name = ?";
+		//"select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time from system_users where user_name = ?";
+		String sql = Db.getSql("system.getUserByName");
 		return Db.findFirst(sql, userName);
 	}
 	/**
@@ -23,7 +26,8 @@ public class UserServiece {
 	 * @return
 	 */
 	public Record getUserByID(String userID) {
-		String sql = "select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time from system_users where user_id = ?";
+		//"select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time from system_users where user_id = ?";
+		String sql = Db.getSql("system.getUserByID");
 		return Db.findFirst(sql, userID);
 	}
 	
@@ -41,8 +45,21 @@ public class UserServiece {
 	 * @return
 	 */
 	public Page<Record> getUser(int pageNumber, int pageSize){
-		String select = "select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time";
-		String from = "from system_users order by user_id asc";
+		//"select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time";
+		String select = Db.getSql("system.getUser_select");
+		//"from system_users order by user_id asc";
+		String from = Db.getSql("system.getUser_from");
 		return Db.paginate(pageNumber, pageSize, select, from);
+	}
+	
+	/**
+	 * 根据用户ID获取用户权限列表
+	 * @param userID
+	 * @return
+	 */
+	public List<Record> getUserRole(String userID) {
+		//"select a.user_role_id,a.user_id,b.role_id,b.role_name,b.token,b.state from system_role_user a,system_role b where a.role_id=b.role_id and a.user_id = ?";
+		String sql = Db.getSql("system.getUserRole");
+		return Db.find(sql, userID);
 	}
 }

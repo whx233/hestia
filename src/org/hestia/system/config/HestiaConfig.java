@@ -17,6 +17,7 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.template.Engine;
+import com.jfinal.template.source.ClassPathSourceFactory;
 
 public class HestiaConfig extends JFinalConfig{
 
@@ -71,8 +72,12 @@ public class HestiaConfig extends JFinalConfig{
 		
 		// 配置ActiveRecord插件
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(druidPlugin);
+		
+		arp.getEngine().setSourceFactory(new ClassPathSourceFactory());
+		arp.addSqlTemplate("mysql.sql");
 		// 所有映射在 MappingKit 中自动化搞定
-		//_MappingKit.mapping(arp);
+//		_MappingKit.mapping(arp);
+		arp.setDevMode(true);
 		me.add(arp);
 		//arp.setDialect(new MysqlDialect()); //方言配置
 	}

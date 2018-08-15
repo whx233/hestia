@@ -1,6 +1,7 @@
 package org.hestia.system.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -10,10 +11,26 @@ import com.jfinal.plugin.activerecord.Record;
 
 public class MenuTree {
 
-	public static List<MenuNode> getMenuList(String roleID) {
-		String sql = "select a.* from system_menu a,system_role_menu b where a.menu_id=b.menu_id and a.menu_id<>'0' and b.role_id=?";
+	/**
+	 * 获取菜单列表
+	 * @param roleID
+	 * @return
+	 */
+	public static List<MenuNode> getMenuList(Object... roleID) {
+//		"select distinct a.* from system_menu a,system_role_menu b where a.menu_id=b.menu_id and a.menu_id<>'0'"
+		String sql = Db.getSql("system.getMenuList");
+		String in = " and b.role_id in (";
+		for(int i=0;i<roleID.length;i++) {
+			if(i==roleID.length-1) {
+				in = in + "?"+")";
+			}else {
+				in = in + "?,";
+			}
+		}
+		sql = sql + in;
+		
 		List<Record> recordList = Db.find(sql, roleID);
-
+		System.out.println(recordList.size());
 		List<MenuNode> list = new ArrayList<>();
 		for (int i = 0; i < recordList.size(); i++) {
 			Record record = recordList.get(i);
@@ -26,6 +43,22 @@ public class MenuTree {
 			mn.setAuto_expand(record.getBoolean("auto_expand"));
 			mn.setHidden(record.getBoolean("hidden"));
 			mn.setParents_id(record.getStr("parents_id"));
+			HashMap<String, Object> meta = new HashMap<>();
+			String icon = record.getStr("icon");
+			if(icon!=null && !icon.equals("")) {
+				meta.put("icon", record.getStr("icon"));
+			}
+			String title = record.getStr("title");
+			if(title!=null && !title.equals("")) {
+				meta.put("title", record.getStr("title"));
+			}
+			boolean noCache = record.getBoolean("noCache");
+			if(!noCache) {
+				meta.put("noCache", noCache);
+			}
+			if(meta.size()>0) {
+				mn.setMeta(meta);
+			}
 			list.add(mn);
 		}
 		return list;
@@ -35,9 +68,13 @@ public class MenuTree {
 	 * 拼菜单树
 	 * @return
 	 */
-	public String menuBuild(String roleId) {
+	public String menuBuild(String... roleId) {
+		Object [] objRoleList = new Object[roleId.length];
+		for(int i=0;i<roleId.length;i++) {
+			objRoleList[i] = roleId[i];
+		}
 		//所有菜单列表
-		List<MenuNode> list = getMenuList(roleId);
+		List<MenuNode> list = getMenuList(objRoleList);
 		List<MenuNode> nodeList = new ArrayList<MenuNode>();
 		
 		for (MenuNode menuNode : list) {
@@ -65,35 +102,5 @@ public class MenuTree {
 		return str;
 	}
 	
-	/**
-	 * 获取跟节点列表
-	 * @param list
-	 * @return
-	 */
-//	public List<MenuNode> getRootNodes(List<MenuNode> list){
-//		List<MenuNode> rootNodes = new ArrayList<>();
-//		for(MenuNode n:list) {
-//			if(rootNode(n, list)) {
-//				rootNodes.add(n);
-//			}
-//		}
-//		return rootNodes;
-//	}
-	
-	/**
-	 * 判断是否跟节点
-	 * @param node
-	 * @return
-	 */
-//	public boolean rootNode(MenuNode node,List<MenuNode> nodeList) {
-//		boolean isRootNode = true;
-//		for(MenuNode n:nodeList) {
-//			if(node.getParents_id().equals(n.getMenu_id())) {
-//				isRootNode = false;
-//				break;
-//			}
-//		}
-//		return isRootNode;
-//	}
 
 }
