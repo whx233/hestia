@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50626
 File Encoding         : 65001
 
-Date: 2018-08-08 16:17:09
+Date: 2018-08-15 15:57:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -22,25 +22,27 @@ DROP TABLE IF EXISTS `system_menu`;
 CREATE TABLE `system_menu` (
   `menu_id` varchar(20) NOT NULL COMMENT '菜单ID',
   `path` varchar(100) DEFAULT NULL COMMENT '请求路径',
-  `name` varchar(50) DEFAULT NULL COMMENT '菜单名称',
-  `component` varchar(100) DEFAULT NULL COMMENT '显示组件',
+  `name` varchar(50) NOT NULL COMMENT '菜单名称',
+  `component` varchar(100) NOT NULL COMMENT '显示组件',
   `is_leaf` tinyint(1) DEFAULT NULL COMMENT '是否叶子',
   `auto_expand` tinyint(1) DEFAULT NULL COMMENT '是否展开',
+  `icon` varchar(50) NOT NULL,
+  `title` varchar(50) NOT NULL,
+  `noCache` tinyint(1) DEFAULT '0',
   `hidden` tinyint(1) DEFAULT NULL COMMENT '是否隐藏',
-  `parents_id` varchar(20) DEFAULT NULL,
+  `parents_id` varchar(20) NOT NULL,
   PRIMARY KEY (`menu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of system_menu
 -- ----------------------------
-INSERT INTO `system_menu` VALUES ('0', '/root', '根目录', 'root', '0', '0', '0', '0');
-INSERT INTO `system_menu` VALUES ('1', '/abc', '菜单DEMO', 'demo', '0', '0', '0', '0');
-INSERT INTO `system_menu` VALUES ('2', '/abcd', 'form表单', 'form', '1', '0', '0', '1');
-INSERT INTO `system_menu` VALUES ('3', '/efg', 'table表格', 'table', '1', '0', '0', '1');
-INSERT INTO `system_menu` VALUES ('4', '/xtgl', '系统管理', 'xtgl', '0', '0', '0', '0');
-INSERT INTO `system_menu` VALUES ('5', '/ncjk', '内存监控', 'sss', '1', '0', '0', '4');
-INSERT INTO `system_menu` VALUES ('6', '/pp', '登陆用户', 'eee', '1', '0', '0', '4');
+INSERT INTO `system_menu` VALUES ('0', '/root', '根目录', 'root', '0', '0', '1', '1', '0', '0', '0');
+INSERT INTO `system_menu` VALUES ('1', '/demo', 'demo', '/layout/Layout', '0', '0', 'component', '系统Demo', '0', '0', '0');
+INSERT INTO `system_menu` VALUES ('2', 'create', 'createArticle', '/example/create', '1', '0', '', '创建文章', '0', '0', '1');
+INSERT INTO `system_menu` VALUES ('3', 'tree-table', 'tree-table', '/table/treeTable/treeTable', '1', '0', '', 'treeTable', '0', '0', '1');
+INSERT INTO `system_menu` VALUES ('4', 'dynamic-table', 'dynamicTable', '/table/dynamicTable/index', '1', '0', '', 'dynamicTable', '0', '0', '1');
+INSERT INTO `system_menu` VALUES ('5', 'icons', 'icons', '/svg-icons/index', '1', '0', '', 'icons', '1', '0', '1');
 
 -- ----------------------------
 -- Table structure for `system_role`
@@ -78,11 +80,15 @@ CREATE TABLE `system_role_menu` (
 -- ----------------------------
 INSERT INTO `system_role_menu` VALUES ('1', '0', '2018-07-06 16:05:55');
 INSERT INTO `system_role_menu` VALUES ('1', '1', '2018-07-06 16:06:03');
-INSERT INTO `system_role_menu` VALUES ('1', '2', '2018-07-06 16:06:11');
 INSERT INTO `system_role_menu` VALUES ('1', '3', '2018-07-06 17:40:06');
 INSERT INTO `system_role_menu` VALUES ('1', '4', '2018-07-06 17:42:50');
 INSERT INTO `system_role_menu` VALUES ('1', '5', '2018-07-06 17:43:00');
-INSERT INTO `system_role_menu` VALUES ('1', '6', '2018-07-06 17:43:07');
+INSERT INTO `system_role_menu` VALUES ('3', '0', '2018-08-09 15:31:49');
+INSERT INTO `system_role_menu` VALUES ('3', '1', '2018-08-09 15:32:46');
+INSERT INTO `system_role_menu` VALUES ('3', '2', '2018-08-15 15:05:43');
+INSERT INTO `system_role_menu` VALUES ('3', '3', '2018-08-15 14:56:10');
+INSERT INTO `system_role_menu` VALUES ('3', '4', '2018-08-10 17:18:03');
+INSERT INTO `system_role_menu` VALUES ('3', '5', '2018-08-09 15:32:50');
 
 -- ----------------------------
 -- Table structure for `system_role_user`
@@ -98,6 +104,8 @@ CREATE TABLE `system_role_user` (
 -- ----------------------------
 -- Records of system_role_user
 -- ----------------------------
+INSERT INTO `system_role_user` VALUES ('1', '2', '1');
+INSERT INTO `system_role_user` VALUES ('2', '1', '3');
 
 -- ----------------------------
 -- Table structure for `system_sequence`
@@ -135,5 +143,5 @@ CREATE TABLE `system_users` (
 -- Records of system_users
 -- ----------------------------
 INSERT INTO `system_users` VALUES ('1', 'whx', '狂奔的大象', '123', '1', 'whx的自我介绍', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif', '2018-08-08 10:22:02');
-INSERT INTO `system_users` VALUES ('2', 'abc', '取个名字', '111', '1', 'abc的自动我救赎', null, '2018-08-08 10:44:12');
-INSERT INTO `system_users` VALUES ('3', 'kk', '张三疯', 'ab', '1', 'kk是我', null, '2018-08-08 10:44:10');
+INSERT INTO `system_users` VALUES ('2', 'abc', '取个名字', '111', '1', 'abc的自动我救赎', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif', '2018-08-08 10:44:12');
+INSERT INTO `system_users` VALUES ('3', 'kk', '张三疯', 'ab', '1', 'kk是我', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif', '2018-08-08 10:44:10');
