@@ -1,6 +1,7 @@
 package org.hestia.system.controller;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.hestia.system.controller.service.HestiaService;
 import org.hestia.system.model.RoleService;
@@ -13,8 +14,9 @@ public class SystemController extends HestiaService{
 	/**
 	 * 获取角色情况
 	 */
-	public void getRole() {
-		
+	public void getRoleList() {
+		List<Record> role = RoleService.me.getRoleList();
+		renderJson(role);
 	}
 	
 	/**

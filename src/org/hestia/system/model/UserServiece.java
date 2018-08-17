@@ -1,8 +1,13 @@
 package org.hestia.system.model;
 
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
+import org.hestia.system.utils.Sequence;
+
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -61,5 +66,51 @@ public class UserServiece {
 		//"select a.user_role_id,a.user_id,b.role_id,b.role_name,b.token,b.state from system_role_user a,system_role b where a.role_id=b.role_id and a.user_id = ?";
 		String sql = Db.getSql("system.getUserRole");
 		return Db.find(sql, userID);
+	}
+	
+	/**
+	 * 保存用户
+	 * @param user
+	 * @return
+	 */
+	public boolean saveUser(Record inRecord) {
+		boolean succeed = Db.tx(new IAtom() {
+			@Override
+			public boolean run() throws SQLException {
+				// TODO Auto-generated method stub
+				int userID = Sequence.me.nextval("USER_ID");
+				Record user = new Record();
+				
+				user.set("user_id", userID);
+				user.set("create_time", new Date());
+				user.set("user_name", inRecord.getStr("user_name"));
+				user.set("nick_name", inRecord.getStr("nick_name"));
+				user.set("password", inRecord.getStr("password"));
+				user.set("introduction", inRecord.getStr("introduction"));
+				user.set("state", "1");
+				user.set("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+				if(Db.save("system_users", user)) {
+					boolean r = false;
+					String roleStr = inRecord.get("role");
+					String [] str = roleStr.split(",");
+					for(String s:str) {
+						Record role = new Record();
+						role.set("user_role_id", Sequence.me.nextval("USER_ROLE_ID"));
+						role.set("role_id", s);
+						role.set("user_id", userID);
+						if(Db.save("system_role_user", role)){
+							r = true;
+						}else {
+							return false;
+						}
+					}
+					return r;
+				}else {
+					return false;
+				}
+				
+			}
+		});
+		return succeed;
 	}
 }

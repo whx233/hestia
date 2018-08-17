@@ -1,5 +1,7 @@
 package org.hestia.system.model;
 
+import java.util.List;
+
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -31,5 +33,14 @@ public class RoleService {
 		//"select role_id,role_name,token,state from system_role where role_id = ?";
 		String sql = Db.getSql("system.getRoleByID");
 		return Db.findFirst(sql, id);
+	}
+	
+	/**
+	 * 获取角色清单
+	 * @return
+	 */
+	public List<Record> getRoleList(){
+		String sql = Db.getSql("system.getRoleList");
+		return Db.find(sql);
 	}
 }
