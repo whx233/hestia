@@ -36,22 +36,29 @@ public class Index extends HestiaService {
 					message.put("msg", "此用户还未分配权限，请联系管理员");
 					renderJson(message);
 				} else {
-					List<String> adminList = new ArrayList<>();
-					for (Record r : userRole) {
-						adminList.add(r.getStr("token"));
-					}
-					HashMap<String, Object> admin = new HashMap<>();
-					admin.put("roles", adminList);
-					admin.put("token", user.getStr("user_id"));
-					admin.put("introduction", user.getStr("introduction"));
-					admin.put("avatar", user.getStr("avatar"));
-					admin.put("name", user.getStr("nick_name"));
-					message.put(userName, admin);
+					String state = user.getStr("state");
+					if(state.equals("1")) {
+						List<String> adminList = new ArrayList<>();
+						for (Record r : userRole) {
+							adminList.add(r.getStr("token"));
+						}
+						HashMap<String, Object> admin = new HashMap<>();
+						admin.put("roles", adminList);
+						admin.put("token", user.getStr("user_id"));
+						admin.put("introduction", user.getStr("introduction"));
+						admin.put("avatar", user.getStr("avatar"));
+						admin.put("name", user.getStr("nick_name"));
+						message.put(userName, admin);
 
-					this.setSessionAttr("LOGIN_TOKEN", admin);
-					message.put("code", "1");
-					message.put("msg", "登录成功");
-					renderJson(message);
+						this.setSessionAttr("LOGIN_TOKEN", admin);
+						message.put("code", "1");
+						message.put("msg", "登录成功");
+						renderJson(message);
+					}else {
+						message.put("code", "-1");
+						message.put("msg", "此用户状态无效，请确认!");
+						renderJson(message);
+					}
 				}
 			} else {
 				message.put("code", "-1");

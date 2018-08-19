@@ -113,4 +113,32 @@ public class UserServiece {
 		});
 		return succeed;
 	}
+	
+	/**
+	 * 删除用户
+	 * @param userID
+	 * @return
+	 */
+	public boolean deleteUser(String userID) {
+		boolean succeed = Db.tx(new IAtom() {
+			@Override
+			public boolean run() throws SQLException {
+				// TODO Auto-generated method stub
+				String sql = Db.getSql("user.deleteUser");
+				String sqlR = Db.getSql("user.deleteRoleUser");
+				int i = Db.delete(sql, userID);
+				if(i>0) {
+					i = Db.delete(sqlR, userID);
+					if(i>0) {
+						return true;
+					}else {
+						return false;
+					}
+				}else {
+					return false;
+				}
+			}
+		});
+		return succeed;
+	}
 }

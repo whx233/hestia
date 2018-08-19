@@ -21,13 +21,32 @@ public class UserController extends HestiaService{
 		HashMap<String, Object> userSession = this.getSessionAttr("LOGIN_TOKEN");
 		renderJson(userSession);
 	}
-	
+	/**
+	 * 获取用户列表
+	 */
 	public void getUserList() {
 		int pageNumber = getParaToInt("pageNumber");
 		int pageSize = getParaToInt("pageSize");
 		Page<Record> userList = UserServiece.me.getUser(pageNumber, pageSize);
 		renderJson(userList);
 		
+	}
+	/**
+	 * 根据用户名获取用户信息
+	 */
+	public void getUserByName() {
+		String userName = getPara("w_user_name");
+		Record u = UserServiece.me.getUserByName(userName);
+		HashMap<String, Object> msg = new HashMap<>();
+		if(u!=null && u.getStr("user_name").equals(userName)) {
+			msg.put("code", "1");
+			msg.put("msg", "获取成功!");
+			msg.put("userInfo", u);
+		}else {
+			msg.put("code", "-1");
+			msg.put("msg", "未找到对应的用户!");
+		}
+		renderJson(msg);
 	}
 	/**
 	 * 保存用户
@@ -47,6 +66,22 @@ public class UserController extends HestiaService{
 			msg.put("code", "-1");
 			msg.put("msg", "保存失败!");
 		}
+		renderJson(msg);
+	}
+	/**
+	 * 删除用户
+	 */
+	public void deleteUser() {
+		String userID = getPara("user_id");
+		HashMap<String, String> msg = new HashMap<>();
+		if(UserServiece.me.deleteUser(userID)) {
+			msg.put("code", "1");
+			msg.put("msg", "删除成功!");
+		}else {
+			msg.put("code", "-1");
+			msg.put("msg", "删除失败!");
+		}
+		
 		renderJson(msg);
 	}
 }
