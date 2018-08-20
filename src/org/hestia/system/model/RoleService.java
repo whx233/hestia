@@ -21,7 +21,7 @@ public class RoleService {
 	 */
 	public Record getRoleByToken(String token) {
 		//"select role_id,role_name,token,state from system_role where token = ?";
-		String sql = Db.getSql("system.getRoleByToken");
+		String sql = Db.getSql("role.getRoleByToken");
 		return Db.findFirst(sql, token);
 	}
 	/**
@@ -31,7 +31,7 @@ public class RoleService {
 	 */
 	public Record getRoleByID(String id) {
 		//"select role_id,role_name,token,state from system_role where role_id = ?";
-		String sql = Db.getSql("system.getRoleByID");
+		String sql = Db.getSql("role.getRoleByID");
 		return Db.findFirst(sql, id);
 	}
 	
@@ -40,7 +40,19 @@ public class RoleService {
 	 * @return
 	 */
 	public List<Record> getRoleList(){
-		String sql = Db.getSql("system.getRoleList");
+		String sql = Db.getSql("role.getRoleList");
 		return Db.find(sql);
 	}
+	
+	/**
+	 * 根据用户ID获取用户权限列表
+	 * @param userID
+	 * @return
+	 */
+	public List<Record> getUserRole(String userID) {
+		//"select a.user_role_id,a.user_id,b.role_id,b.role_name,b.token,b.state from system_role_user a,system_role b where a.role_id=b.role_id and a.user_id = ?";
+		String sql = Db.getSql("role.getUserRole");
+		return Db.find(sql, userID);
+	}
+	
 }

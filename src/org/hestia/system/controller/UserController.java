@@ -74,14 +74,72 @@ public class UserController extends HestiaService{
 	public void deleteUser() {
 		String userID = getPara("user_id");
 		HashMap<String, String> msg = new HashMap<>();
-		if(UserServiece.me.deleteUser(userID)) {
-			msg.put("code", "1");
-			msg.put("msg", "删除成功!");
-		}else {
+		if(userID == null || userID.equals("")) {
 			msg.put("code", "-1");
-			msg.put("msg", "删除失败!");
+			msg.put("msg", "传入人员编号不能为空!");
+		}else {
+			if(UserServiece.me.deleteUser(userID)) {
+				msg.put("code", "1");
+				msg.put("msg", "删除成功!");
+			}else {
+				msg.put("code", "-1");
+				msg.put("msg", "删除失败!");
+			}
 		}
-		
+		renderJson(msg);
+	}
+	
+	/**
+	 * 更改用户状态
+	 */
+	public void updateState() {
+		String userID = getPara("w_user_id");
+		String state = getPara("w_state");
+		HashMap<String, String> msg = new HashMap<>();
+		if(userID == null || userID.equals("")) {
+			msg.put("code", "-1");
+			msg.put("msg", "传入人员编号不能为空!");
+		}else {
+			if(state==null || state.equals("") || state.equals("0")) {
+				state = "0";
+			}else {
+				state = "1";
+			}
+			int i = UserServiece.me.updateState(userID,state);
+			if(i>0) {
+				msg.put("code", "1");
+				msg.put("msg", "更新成功!");
+			}else {
+				msg.put("code", "-1");
+				msg.put("msg", "更新失败!");
+			}
+		}
+		renderJson(msg);
+	}
+	
+	/**
+	 * 修改密码
+	 */
+	public void updatePWD() {
+		String userID = getPara("w_user_id");
+		String newPWD = getPara("w_pwd");
+		HashMap<String, String> msg = new HashMap<>();
+		if(userID==null || userID.equals("")) {
+			msg.put("code", "-1");
+			msg.put("msg", "传入人员编号不能为空!");
+		}else if (newPWD==null || newPWD.equals("")) {
+			msg.put("code", "-1");
+			msg.put("msg", "传入新密码不能为空!");
+		}else {
+			int i = UserServiece.me.updatePWD(userID, newPWD);
+			if(i>0) {
+				msg.put("code", "1");
+				msg.put("msg", "修改成功!");
+			}else {
+				msg.put("code", "-1");
+				msg.put("msg", "修改失败!");
+			}
+		}
 		renderJson(msg);
 	}
 }

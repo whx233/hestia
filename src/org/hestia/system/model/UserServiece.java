@@ -2,7 +2,6 @@ package org.hestia.system.model;
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 
 import org.hestia.system.utils.Sequence;
 
@@ -21,8 +20,7 @@ public class UserServiece {
 	 * @return
 	 */
 	public Record getUserByName(String userName) {
-		//"select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time from system_users where user_name = ?";
-		String sql = Db.getSql("system.getUserByName");
+		String sql = Db.getSql("user.getUserByName");
 		return Db.findFirst(sql, userName);
 	}
 	/**
@@ -31,8 +29,7 @@ public class UserServiece {
 	 * @return
 	 */
 	public Record getUserByID(String userID) {
-		//"select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time from system_users where user_id = ?";
-		String sql = Db.getSql("system.getUserByID");
+		String sql = Db.getSql("user.getUserByID");
 		return Db.findFirst(sql, userID);
 	}
 	
@@ -50,22 +47,9 @@ public class UserServiece {
 	 * @return
 	 */
 	public Page<Record> getUser(int pageNumber, int pageSize){
-		//"select user_id,user_name,nick_name,`password`,state,introduction,avatar,create_time";
-		String select = Db.getSql("system.getUser_select");
-		//"from system_users order by user_id asc";
-		String from = Db.getSql("system.getUser_from");
+		String select = Db.getSql("user.getUser_select");
+		String from = Db.getSql("user.getUser_from");
 		return Db.paginate(pageNumber, pageSize, select, from);
-	}
-	
-	/**
-	 * 根据用户ID获取用户权限列表
-	 * @param userID
-	 * @return
-	 */
-	public List<Record> getUserRole(String userID) {
-		//"select a.user_role_id,a.user_id,b.role_id,b.role_name,b.token,b.state from system_role_user a,system_role b where a.role_id=b.role_id and a.user_id = ?";
-		String sql = Db.getSql("system.getUserRole");
-		return Db.find(sql, userID);
 	}
 	
 	/**
@@ -89,7 +73,7 @@ public class UserServiece {
 				user.set("introduction", inRecord.getStr("introduction"));
 				user.set("state", "1");
 				user.set("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
-				if(Db.save("system_users", user)) {
+				if(Db.save("system_user", user)) {
 					boolean r = false;
 					String roleStr = inRecord.get("role");
 					String [] str = roleStr.split(",");
@@ -140,5 +124,25 @@ public class UserServiece {
 			}
 		});
 		return succeed;
+	}
+	/**
+	 * 更新用户状态
+	 * @param userID
+	 * @param state
+	 * @return
+	 */
+	public int updateState(String userID,String state) {
+		String sql = Db.getSql("user.updateState");
+		return Db.update(sql,state, userID);
+	}
+	/**
+	 * 修改密码
+	 * @param userID
+	 * @param newPWD
+	 * @return
+	 */
+	public int updatePWD(String userID,String newPWD) {
+		String sql = Db.getSql("user.updatePWD");
+		return Db.update(sql, newPWD,userID);
 	}
 }

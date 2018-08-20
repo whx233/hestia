@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.hestia.system.controller.service.HestiaService;
+import org.hestia.system.model.RoleService;
 import org.hestia.system.model.UserServiece;
 
 import com.jfinal.plugin.activerecord.Record;
@@ -30,7 +31,7 @@ public class Index extends HestiaService {
 			String pwdIN = getPara("password");
 			String pwdOUT = user.getStr("password");
 			if (pwdIN.equals(pwdOUT)) {
-				List<Record> userRole = UserServiece.me.getUserRole(user.getStr("user_id"));
+				List<Record> userRole = RoleService.me.getUserRole(user.getStr("user_id"));
 				if (userRole == null || userRole.size() == 0) {
 					message.put("code", "-1");
 					message.put("msg", "此用户还未分配权限，请联系管理员");
