@@ -71,6 +71,7 @@ public class UserServiece {
 				user.set("nick_name", inRecord.getStr("nick_name"));
 				user.set("password", inRecord.getStr("password"));
 				user.set("introduction", inRecord.getStr("introduction"));
+				user.set("email", inRecord.getStr("email"));
 				user.set("state", "1");
 				user.set("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
 				if(Db.save("system_user", user)) {
