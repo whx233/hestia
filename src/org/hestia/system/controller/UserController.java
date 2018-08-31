@@ -175,19 +175,27 @@ public class UserController extends HestiaService{
 			String key = enu.nextElement();
 			user.set(key, getPara(key));
 		}
-		System.out.println(user);
-		if(user.getStr("user_id") == null) {
+		String [] check = {"user_id","user_name"};
+		HashMap<String, String> checkResult = Tools.me.checkNull(user, check);
+		if(checkResult.get("code").equals("-1")) {
 			msg.put("code", "-1");
-			msg.put("msg", "入参用户ID不能为空!");
+			msg.put("msg", checkResult.get("msg"));
 		}else {
-			String [] key = {"user_id","nick_name","email","introduction"};
-			Record data = Tools.me.formatRecord(user, key);
-			if(UserServiece.me.updateInfo(data)) {
-				msg.put("code", "1");
-				msg.put("msg", "数据更新成功!");
-			}else {
+			String userName = user.getStr("user_name");
+			Record r = UserServiece.me.getUserByName(userName);
+			if(r!=null && !r.getStr("user_id").equals(user.getStr("user_id"))) {
 				msg.put("code", "-1");
-				msg.put("msg", "数据更新失败!");
+				msg.put("msg", "用户名( "+userName+" )已存在!");
+			}else {
+				String [] key = {"user_id","nick_name","email","introduction"};
+				Record data = Tools.me.formatRecord(user, key);
+				if(UserServiece.me.updateInfo(data)) {
+					msg.put("code", "1");
+					msg.put("msg", "数据更新成功!");
+				}else {
+					msg.put("code", "-1");
+					msg.put("msg", "数据更新失败!");
+				}
 			}
 		}
 		renderJson(msg);
