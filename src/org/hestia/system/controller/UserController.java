@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.hestia.system.controller.service.HestiaService;
 import org.hestia.system.model.UserServiece;
+import org.hestia.system.utils.Tools;
 
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -27,7 +28,14 @@ public class UserController extends HestiaService{
 	public void getUserList() {
 		int pageNumber = getParaToInt("pageNumber");
 		int pageSize = getParaToInt("pageSize");
-		Page<Record> userList = UserServiece.me.getUser(pageNumber, pageSize);
+		String type = getPara("type");
+		String value = getPara("value");
+		Page<Record> userList = null;
+		if(type!=null && !type.equals("") && value!=null && !value.equals("")) {
+			userList = UserServiece.me.searchUser(pageNumber, pageSize, type, value);
+		}else{
+			userList = UserServiece.me.getUser(pageNumber, pageSize);
+		}
 		renderJson(userList);
 		
 	}
@@ -59,12 +67,26 @@ public class UserController extends HestiaService{
 			user.set(key, getPara(key));
 		}
 		HashMap<String, String> msg = new HashMap<>();
-		if(UserServiece.me.saveUser(user)) {
-			msg.put("code", "1");
-			msg.put("msg", "保存成功!");
-		}else {
+		//校验非空值
+		String [] key = {"user_name","nick_name","password","email"};
+		HashMap<String, String> check = Tools.me.checkNull(user, key);
+		if(check.get("code").equals("-1")) {
 			msg.put("code", "-1");
-			msg.put("msg", "保存失败!");
+			msg.put("msg", check.get("msg"));
+		}else {
+			Record r = UserServiece.me.getUserByName(user.getStr("user_name"));
+			if(r!=null && r.getStr("user_name").equals(user.getStr("user_name"))) {
+				msg.put("code", "-1");
+				msg.put("msg", "用户名重复!");
+			}else {
+				if(UserServiece.me.saveUser(user)) {
+					msg.put("code", "1");
+					msg.put("msg", "保存成功!");
+				}else {
+					msg.put("code", "-1");
+					msg.put("msg", "保存失败!");
+				}
+			}
 		}
 		renderJson(msg);
 	}
@@ -141,5 +163,44 @@ public class UserController extends HestiaService{
 			}
 		}
 		renderJson(msg);
+	}
+	/**
+	 * 更新用户信息
+	 */
+	public void updateInfo() {
+		HashMap<String, String> msg = new HashMap<>();
+		Record user = new Record();
+		Enumeration<String> enu = getParaNames();
+		while(enu.hasMoreElements()) {
+			String key = enu.nextElement();
+			user.set(key, getPara(key));
+		}
+		System.out.println(user);
+		if(user.getStr("user_id") == null) {
+			msg.put("code", "-1");
+			msg.put("msg", "入参用户ID不能为空!");
+		}else {
+			String [] key = {"user_id","nick_name","email","introduction"};
+			Record data = Tools.me.formatRecord(user, key);
+			if(UserServiece.me.updateInfo(data)) {
+				msg.put("code", "1");
+				msg.put("msg", "数据更新成功!");
+			}else {
+				msg.put("code", "-1");
+				msg.put("msg", "数据更新失败!");
+			}
+		}
+		renderJson(msg);
+	}
+	/**
+	 * 搜索用户
+	 */
+	public void findUser() {
+		String type = getPara("type");
+		String value = getPara("value");
+		int pageNumber = getParaToInt("pageNumber");
+		int pageSize = getParaToInt("pageSize");
+		Page<Record> userList = UserServiece.me.searchUser(pageNumber, pageSize, type, value);
+		renderJson(userList);
 	}
 }

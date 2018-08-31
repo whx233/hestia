@@ -146,4 +146,36 @@ public class UserServiece {
 		String sql = Db.getSql("user.updatePWD");
 		return Db.update(sql, newPWD,userID);
 	}
+	/**
+	 * 
+	 * @param record
+	 * @return
+	 */
+	public boolean updateInfo(Record record) {
+		return Db.update("system_user", "user_id", record);
+	}
+	
+	/**
+	 * 模糊搜索人员
+	 * @param pageNumber
+	 * @param pageSize
+	 * @param type a根据用户名搜索 b根据昵称搜索 c根据角色搜索
+	 * @param like
+	 * @return
+	 */
+	public Page<Record> searchUser(int pageNumber, int pageSize,String type,String like) {
+		String select = Db.getSql("user.searchUser");
+		String from = "";
+		if(type.equals("a")) {
+			from = Db.getSql("user.searchUser_a");
+		}else if(type.equals("b")) {
+			from = Db.getSql("user.searchUser_b");
+		}else if(type.equals("c")) {
+			from = Db.getSql("user.searchUser_c");
+		}else {
+			from = Db.getSql("user.getUser_from");
+			return Db.paginate(pageNumber, pageSize, select, from,like);
+		}
+		return Db.paginate(pageNumber, pageSize, select, from,"%"+like+"%");
+	}
 }
